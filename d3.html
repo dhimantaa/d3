@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3.js Tree Example</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+<body>
+    
+
+    <svg id="tree-container"></svg>
+
+    <script>
+      var treeData = {
+          name: "Root1",
+          children: [
+              {
+                  name: "Root2",
+                  children: [
+                      { name: "Leaf 1.1" },
+                      { name: "Leaf 1.2" },
+                      { name: "Leaf 1.2" },
+                      { name: "Leaf 1.2" },
+                      { name: "Leaf 1.2" },
+                      { name: "Leaf 1.2" },
+                      { name: "Leaf 1.2" },
+                      { name: "Leaf 1.2" }
+                  ]
+              },
+          ]
+      };
+        // Set the dimensions and margins of the diagram
+      var margin = { top: 20, right: 90, bottom: 30, left: 90 },
+          width = 960 - margin.left - margin.right,
+          height = 500 - margin.top - margin.bottom;
+      
+      // Append the SVG element to the body
+      var svg = d3.select("#tree-container")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      
+      // Create a tree layout and assign the size
+      var tree = d3.tree().size([height, width]);
+      
+      // Assign the data to a hierarchy using the given data
+      var root = d3.hierarchy(treeData);
+      
+      // Compute the new tree layout
+      var treeRoot = tree(root);
+      
+      // Add links
+      svg.selectAll(".link")
+          .data(treeRoot.links())
+        .enter().append("path")
+          .attr("class", "link")
+          .attr("d", d3.linkHorizontal()
+              .x(function (d) { return d.y; })
+              .y(function (d) { return d.x; })
+        )
+        .attr("fill", "none")
+        .attr("stroke", "black");
+      
+      // Add nodes
+      svg.selectAll(".node")
+          .data(treeRoot.descendants())
+        .enter().append("circle")
+          .attr("class", "node")
+          .attr("cx", function (d) { return d.y; })
+          .attr("cy", function (d) { return d.x; })
+          .attr("r", 10);
+      
+      // Add labels
+      svg.selectAll(".label")
+          .data(treeRoot.descendants())
+        .enter().append("text")
+          .attr("class", "label")
+          .attr("x", function (d) { return d.y - 15; })
+          .attr("y", function (d) { return d.x - 15; })
+          .text(function (d) { return d.data.name; });
+
+    </script>
+</body>
+</html>
